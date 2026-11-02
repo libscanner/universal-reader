@@ -1,0 +1,38 @@
+# Universal code reader (unir)
+
+> Commercial C++20 library that reads DataMatrix (ECC 200, including GS1 / Chestny ZNAK marking codes), GS1-128 (SSCC), Code 128 and EAN-13 / EAN-8 / UPC-A / UPC-E codes in one call. Static C++ API (`libunir.a`), flat C ABI (`unir_c`), Python package (`pip install libscanner-unir`, `import unir`) and the `unir` command-line tool, for Windows x64 and Linux (x86-64, ARM64, ARMv7). This repository holds the public headers, examples and license texts — no library source; prebuilt packages are in GitHub Releases. The library runs a trial period (one month from the first run on a machine, no network needed); after that a license from https://libscanner.com is required.
+
+The public headers are the authoritative API reference: every type, field and function is commented in English. Read them before writing code against the library.
+
+## API reference (headers in this repository)
+
+- [include/unir/Unir.h](include/unir/Unir.h): umbrella header — includes the whole C++ API
+- [include/unir/Scanner.h](include/unir/Scanner.h): the entry point — `unir::Scanner::scan()` / `scanFile()`, `unir::ScanResult`, `unir::Code` and the status codes
+- [include/unir/Settings.h](include/unir/Settings.h): `unir::Settings` — presets `stream()` (camera frames), `single()` (one-off images), `multi(n)` (several codes), symbology mask, one time budget per frame
+- [include/unir/Symbology.h](include/unir/Symbology.h): `unir::Symbology` bits, masks, names, `parseSymbologies()`
+- [include/unir/Image.h](include/unir/Image.h): the input frame `unir::ImageView` (pointer, size, stride, pixel format) and `unir::loadImage` from a file
+- [include/unir/Geometry.h](include/unir/Geometry.h): code box and corners in the frame
+- [include/unir/License.h](include/unir/License.h): trial and license status, activation
+- [include/unir/Version.h](include/unir/Version.h): library and engine versions
+- [include/unir/unir_c.h](include/unir/unir_c.h): the flat C ABI (`unir_c` shared library) — for C, MSVC, C#, Go, Delphi and other languages
+
+## Examples
+
+- [examples/cpp/main.cpp](examples/cpp/main.cpp): C++, static linking ([build notes](examples/cpp/README.md), [meson.build](examples/cpp/meson.build))
+- [examples/c/main.c](examples/c/main.c): C via the C ABI ([build notes](examples/c/README.md))
+- [examples/python/example.py](examples/python/example.py): Python package
+- [examples/cli/README.md](examples/cli/README.md): the `unir` command-line tool, including `--serve` mode for long-running processes
+
+## Docs
+
+- [Full documentation — C++ and C ABI (Markdown)](https://libscanner.com/en/docs/universal-reader/1.0/cpp.md): installation, linking on Windows and Linux, settings, result fields, licensing, command line
+- [Full documentation — Python (Markdown)](https://libscanner.com/en/docs/universal-reader/1.0/python.md)
+- [All libraries, all documentation in one file](https://libscanner.com/llms-full.txt)
+- [README](README.md): platforms, release files
+
+## Optional
+
+- [Read codes online](https://libscanner.com/en/scan): the same reader as a browser demo
+- [Releases](https://github.com/libscanner/universal-reader/releases/latest): prebuilt packages and Python wheels with SHA256SUMS
+- [CHANGELOG.md](CHANGELOG.md)
+- [LICENSE.en.txt](LICENSE.en.txt): end-user license agreement
