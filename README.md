@@ -2,9 +2,9 @@
 
 # Universal code reader library (unir)
 
-Reads codes of several symbologies in a frame with one call: **DataMatrix** (ECC 200, including GS1 / Chestny ZNAK marking codes — the Russian national product marking system), **GS1-128** (SSCC on logistics labels), **Code 128** and retail barcodes **EAN-13, EAN-8, UPC-A, UPC-E**.
+Reads codes of several symbologies in a frame with one call: **DataMatrix** (ECC 200, including GS1 / Chestny ZNAK marking codes — the Russian national product marking system), **GS1-128** (SSCC on logistics labels), **Code 128**, retail barcodes **EAN-13, EAN-8, UPC-A, UPC-E** and **QR** (model 2, versions 1–40, including GS1 QR).
 
-`unir` is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. Inside it are two engines: the [dmr](https://github.com/libscanner/datamatrix-reader) DataMatrix reader and a linear-barcode engine; one time budget per frame is shared between them. One license covers both.
+`unir` is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. One time budget per frame is shared between all symbologies, and one license covers them all. An optional scout network (shipped in the package) finds the codes first and speeds up reading of several codes in a frame.
 
 This repository contains the public headers, examples, documentation links and license texts. **It contains no library source code.** Prebuilt binaries are attached to [GitHub Releases](https://github.com/libscanner/universal-reader/releases/latest).
 
@@ -16,10 +16,10 @@ This repository contains the public headers, examples, documentation links and l
 
 | Platform | C++ static library + C ABI + CLI | Python wheel |
 |---|---|---|
-| Windows x64 | `unir-1.0.1-windows-x64.zip` | `libscanner_unir-1.0.1-py3-none-win_amd64.whl` |
-| Linux x86-64 | `unir-1.0.1-linux-x64.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_x86_64.whl` |
-| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.0.1-linux-arm64.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_aarch64.whl` |
-| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.0.1-linux-armhf.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_armv7l.whl` |
+| Windows x64 | `unir-1.2.0-windows-x64.zip` | `libscanner_unir-1.2.0-py3-none-win_amd64.whl` |
+| Linux x86-64 | `unir-1.2.0-linux-x64.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_x86_64.whl` |
+| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.2.0-linux-arm64.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_aarch64.whl` |
+| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.2.0-linux-armhf.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_armv7l.whl` |
 
 Each platform also has a CLI-only archive (`…-cli.zip` / `…-cli.tar.gz`) with just the `unir` tool.
 
@@ -37,6 +37,8 @@ Each platform also has a CLI-only archive (`…-cli.zip` / `…-cli.tar.gz`) wit
 
 Every build works for **30 days from the first run on a machine** — no registration, no key, no network access during the trial. After that a license key from <https://libscanner.com> is required; until then `scan()` returns `Status::Unlicensed` without processing the frame.
 
+**Containers (Docker, Kubernetes)** — since 1.2 a container has no trial without a key: the library runs under an **instance** license, the key goes into the `UNIR_LICENSE_KEY` environment variable or the `/run/secrets/unir.key` secret, and containers can be recreated freely. Get a container trial key (2 instances, 30 days) in your account at <https://libscanner.com/en/>. Details: [license in Docker and Kubernetes](https://libscanner.com/en/articles/library-license-docker-kubernetes/).
+
 ## Package contents
 
 ```text
@@ -50,7 +52,7 @@ bin/unir                           command-line tool
 share/doc/unir/licenses/           third-party licenses
 ```
 
-The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.0.1 packages; only the comments differ (translated to English here, Russian in the packages).
+The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.2.0 packages; only the comments differ (translated to English here, Russian in the packages).
 
 ## Quick start
 
@@ -75,7 +77,7 @@ int main() {
 Link statically through pkg-config — the query **must** be `--static`:
 
 ```sh
-PKG_CONFIG_PATH=/path/to/unir-1.0.1-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
+PKG_CONFIG_PATH=/path/to/unir-1.2.0-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
 ```
 
 A frame from your own capture pipeline (camera SDK, OpenCV buffer, bitmap) is passed as a view over the existing buffer, without copying:

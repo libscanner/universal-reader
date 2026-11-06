@@ -33,9 +33,9 @@ struct Code {
     Box  box;
     Quad corners;
 
-    /// DataMatrix: modules per side (0 — unknown).
+    /// DataMatrix and QR: modules per side (0 — unknown).
     int moduleCount = 0;
-    /// Linear symbologies: module width, pixels (0 — unknown).
+    /// Linear symbologies and QR: module width, pixels (0 — unknown).
     float modulePx = 0.0f;
 };
 
@@ -73,6 +73,12 @@ public:
     ScanResult scanFile(const std::string& path, LoadStatus* load = nullptr) const;
 
     const Settings& settings() const;
+
+    /// The scout network is loaded (Settings::netModel is set and the file was
+    /// read).
+    bool netReady() const;
+    /// Why the network did not load; empty — it loaded or is not set.
+    const std::string& netError() const;
 
 private:
     struct Impl;

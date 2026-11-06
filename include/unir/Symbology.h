@@ -24,6 +24,10 @@ enum class Symbology : uint32_t {
     Ean8       = 1u << 4,
     UpcA       = 1u << 5,
     UpcE       = 1u << 6,
+    /// QR model 2, versions 1–40 (the qrr engine). Text is UTF-8 (ECI, kanji
+    /// from Shift-JIS); for GS1 QR the leading FNC1 is not passed, an FNC1
+    /// inside is the Gs separator (0x1D), as with DataMatrix.
+    Qr         = 1u << 7,
 };
 
 /// Mask of symbologies.
@@ -40,19 +44,20 @@ constexpr bool has(Symbologies mask, Symbology s) { return (mask & static_cast<S
 constexpr Symbologies kEanUpc = Symbology::Ean13 | Symbology::Ean8 | Symbology::UpcA | Symbology::UpcE;
 
 /// All symbologies of this build.
-constexpr Symbologies kAllSymbologies = Symbology::DataMatrix | Symbology::Code128 | Symbology::Gs1_128 | kEanUpc;
+constexpr Symbologies kAllSymbologies =
+    Symbology::DataMatrix | Symbology::Code128 | Symbology::Gs1_128 | kEanUpc | static_cast<Symbologies>(Symbology::Qr);
 
 /// Short name: "datamatrix", "code128", "gs1-128", "ean-13", "ean-8",
-/// "upc-a", "upc-e"; None — "none".
+/// "upc-a", "upc-e", "qr"; None — "none".
 const char* nameOf(Symbology s);
 
 /// AIM symbology identifier (ISO/IEC 15424) without the data modifier:
-/// "]d", "]C", "]E".
+/// "]d", "]C", "]E", "]Q".
 const char* aimPrefixOf(Symbology s);
 
 /// Mask from a comma-separated list of names: "dm,128,gs1-128", "all".
 /// Accepts datamatrix|dm, code128|128, gs1-128|gs1|sscc, ean-13|ean13,
-/// ean-8|ean8, upc-a|upca, upc-e|upce and ean — all four EAN/UPC. An unknown
+/// ean-8|ean8, upc-a|upca, upc-e|upce, ean — all four EAN/UPC, and qr. An unknown
 /// name returns false and leaves mask unchanged.
 bool parseSymbologies(const std::string& list, Symbologies& mask);
 

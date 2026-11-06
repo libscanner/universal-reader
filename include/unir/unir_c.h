@@ -69,15 +69,15 @@ extern "C" {
  * fields go only at the end of existing structures.
  */
 #define UNIR_C_ABI_VERSION_MAJOR 1
-#define UNIR_C_ABI_VERSION_MINOR 0
+#define UNIR_C_ABI_VERSION_MINOR 1
 
 /* All three follow the snprintf contract: copy what fits into buf (always
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
-UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.0" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.0.1". */
+UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.1" */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.0". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
-/* Versions of the engines inside the build: "dmr 1.0.13, ssccr 0.1.0". */
+/* Versions of the engines inside the build: "dmr 1.0.14, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
 
 /* ── Symbologies ────────────────────────────────────────────────────────── */
@@ -96,17 +96,18 @@ UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
 #define UNIR_SYM_UPCA        0x20u  /* 12 digits */
 #define UNIR_SYM_UPCE        0x40u  /* 8 digits, not expanded to UPC-A */
 #define UNIR_SYM_EAN_UPC     (UNIR_SYM_EAN13 | UNIR_SYM_EAN8 | UNIR_SYM_UPCA | UNIR_SYM_UPCE)
-#define UNIR_SYM_ALL         (UNIR_SYM_DATAMATRIX | UNIR_SYM_CODE128 | UNIR_SYM_GS1_128 | UNIR_SYM_EAN_UPC)
+#define UNIR_SYM_QR          0x80u  /* QR model 2, versions 1–40 */
+#define UNIR_SYM_ALL         (UNIR_SYM_DATAMATRIX | UNIR_SYM_CODE128 | UNIR_SYM_GS1_128 | UNIR_SYM_EAN_UPC | UNIR_SYM_QR)
 
 /* Short name of a symbology (exactly one bit): "datamatrix", "code128",
- * "gs1-128", "ean-13", "ean-8", "upc-a", "upc-e"; 0 — "none"; anything
+ * "gs1-128", "ean-13", "ean-8", "upc-a", "upc-e", "qr"; 0 — "none"; anything
  * else — "unknown". The string is static — do not free it. */
 UNIR_C_API const char* unir_symbology_name(uint32_t symbology);
 
 /* Mask from a comma-separated list of names, like the --sym option of the
  * unir tool: "dm,128,gs1-128", "ean", "all". Accepts datamatrix|dm,
  * code128|128, gs1-128|gs1|sscc, ean-13|ean13, ean-8|ean8, upc-a|upca,
- * upc-e|upce and ean (all four EAN/UPC). Returns 1 and writes *mask; 0 — an
+ * upc-e|upce, ean (all four EAN/UPC) and qr. Returns 1 and writes *mask; 0 — an
  * unknown name or NULL, *mask untouched. */
 UNIR_C_API int unir_parse_symbologies(const char* list, uint32_t* mask);
 
@@ -182,6 +183,15 @@ typedef enum {
     UNIR_MODE_MULTI  = 2,  /* several codes per frame */
 } unir_mode_t;
 
+/* Full search after the scout network crops (unir::Settings::NetFallback). */
+typedef enum {
+    UNIR_NET_FALLBACK_UNREAD = 0,  /* only classes the network found but did
+                                    * not read, and a frame where it found
+                                    * nothing (default) */
+    UNIR_NET_FALLBACK_ALWAYS = 1,  /* always: the crops only speed up the
+                                    * first read */
+} unir_net_fallback_t;
+
 /*
  * Corresponds to unir::Settings in the C++ API — same fields and defaults.
  *
@@ -215,6 +225,19 @@ struct unir_settings {
     int      max_image_side;    /* larger frame — UNIR_STATUS_IMAGE_TOO_LARGE;
                                  * 0 — the 65535 ceiling; default 16384 */
     int64_t  max_image_pixels;  /* 0 — the 2^29 ceiling; default 100 000 000 */
+
+    /* ── ABI 1.1 (unir 1.1.0) ── */
+    const char* net_model;      /* scout network: path to the .unet model (in
+                                 * the package — share/unir/net/seg16a.unet),
+                                 * UTF-8 or the system encoding, as for
+                                 * unir_load_image; read in
+                                 * unir_scanner_create, the string can be freed
+                                 * right after. NULL or "" — no network */
+    float    net_conf;          /* network confidence below which a detection
+                                 * is ignored; 0 — default 0.35 */
+    int      net_fallback;      /* unir_net_fallback_t */
+    int      threads;           /* threads for the network crops with several
+                                 * codes; 0 — default 1, -1 — one per core */
 };
 
 /* Settings tag of ABI 1.x: bytes 'U' 'N' 'R' '1' (little-endian). */
@@ -279,6 +302,14 @@ typedef enum {
  */
 UNIR_C_API unir_scanner_t* unir_scanner_create(const unir_settings_t* settings);
 UNIR_C_API void            unir_scanner_destroy(unir_scanner_t* scanner);
+
+/* The scout network is loaded: 1 — yes; 0 — net_model is not set or the file
+ * was not read (why — unir_scanner_net_error; the scanner then works without
+ * the network). ABI 1.1. */
+UNIR_C_API int    unir_scanner_net_ready(const unir_scanner_t* scanner);
+/* Why the network did not load; an empty string — it loaded or is not set.
+ * snprintf contract. ABI 1.1. */
+UNIR_C_API size_t unir_scanner_net_error(const unir_scanner_t* scanner, char* buf, size_t buf_size);
 
 /* ── Result ─────────────────────────────────────────────────────────────── */
 

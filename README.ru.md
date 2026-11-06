@@ -2,9 +2,9 @@
 
 # Библиотека чтения машиночитаемых кодов (unir)
 
-Читает одним вызовом коды разных символик на одном кадре: **DataMatrix** (ECC 200, ГОСТ Р ИСО/МЭК 16022, коды «Честного знака»), **GS1-128** (SSCC на логистических этикетках), **Code 128** и розничные штрихкоды **EAN-13, EAN-8, UPC-A, UPC-E**.
+Читает одним вызовом коды разных символик на одном кадре: **DataMatrix** (ECC 200, ГОСТ Р ИСО/МЭК 16022, коды «Честного знака»), **GS1-128** (SSCC на логистических этикетках), **Code 128**, розничные штрихкоды **EAN-13, EAN-8, UPC-A, UPC-E** и **QR** (модель 2, версии 1–40, в том числе GS1 QR).
 
-`unir` — коммерческая библиотека с закрытым исходным кодом: C++20 API, плоский C ABI, пакет для Python и утилита командной строки. Внутри два движка: ридер DataMatrix [dmr](https://github.com/libscanner/datamatrix-reader) и движок линейных штрихкодов; один предел времени на кадр они делят между собой. Лицензия на оба — одна.
+`unir` — коммерческая библиотека с закрытым исходным кодом: C++20 API, плоский C ABI, пакет для Python и утилита командной строки. Один предел времени на кадр — на все символики, лицензия на все — одна. Необязательная сеть-разведчик (в поставке) сначала находит коды и ускоряет чтение нескольких кодов на кадре.
 
 В этом репозитории — публичные заголовки, примеры, ссылки на документацию и тексты лицензий. **Исходного кода библиотеки здесь нет.** Собранные библиотеки приложены к [выпускам на GitHub](https://github.com/libscanner/universal-reader/releases/latest).
 
@@ -14,10 +14,10 @@
 
 | Платформа | Статическая библиотека C++ + C ABI + утилита | Колесо Python |
 |---|---|---|
-| Windows x64 | `unir-1.0.1-windows-x64.zip` | `libscanner_unir-1.0.1-py3-none-win_amd64.whl` |
-| Linux x86-64 | `unir-1.0.1-linux-x64.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_x86_64.whl` |
-| Linux ARM64 (Raspberry Pi 3/4/5, 64 бит) | `unir-1.0.1-linux-arm64.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_aarch64.whl` |
-| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32 бит) | `unir-1.0.1-linux-armhf.tar.gz` | `libscanner_unir-1.0.1-py3-none-manylinux_2_36_armv7l.whl` |
+| Windows x64 | `unir-1.2.0-windows-x64.zip` | `libscanner_unir-1.2.0-py3-none-win_amd64.whl` |
+| Linux x86-64 | `unir-1.2.0-linux-x64.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_x86_64.whl` |
+| Linux ARM64 (Raspberry Pi 3/4/5, 64 бит) | `unir-1.2.0-linux-arm64.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_aarch64.whl` |
+| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32 бит) | `unir-1.2.0-linux-armhf.tar.gz` | `libscanner_unir-1.2.0-py3-none-manylinux_2_36_armv7l.whl` |
 
 Для каждой платформы есть и архив только с утилитой `unir` (`…-cli.zip` / `…-cli.tar.gz`).
 
@@ -35,6 +35,8 @@
 
 Любая сборка работает **30 дней с первого запуска на машине** — без регистрации, без ключа и без обращения к сети. Дальше нужен ключ лицензии с <https://libscanner.com>; без него `scan()` сразу возвращает `Status::Unlicensed` и кадр не обрабатывает.
 
+**Контейнеры (Docker, Kubernetes)** — с версии 1.2 в контейнере без ключа пробного периода нет: библиотека работает по лицензии **на экземпляры**, ключ — в переменной окружения `UNIR_LICENSE_KEY` или секрете `/run/secrets/unir.key`, контейнеры можно пересоздавать. Пробный ключ для контейнеров (2 экземпляра, 30 дней) — в личном кабинете на <https://libscanner.com/>. Подробнее: [лицензия в Docker и Kubernetes](https://libscanner.com/articles/licenziya-docker-kubernetes/).
+
 ## Состав поставки
 
 ```text
@@ -48,7 +50,7 @@ bin/unir                           утилита командной строк�
 share/doc/unir/licenses/           лицензии стороннего кода
 ```
 
-Заголовки в [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) этого репозитория объявляют тот же API, что заголовки поставки 1.0.1; отличаются только комментарии (здесь — на английском, в поставке — на русском).
+Заголовки в [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) этого репозитория объявляют тот же API, что заголовки поставки 1.2.0; отличаются только комментарии (здесь — на английском, в поставке — на русском).
 
 ## Быстрый старт
 
@@ -73,7 +75,7 @@ int main() {
 Статическая компоновка через pkg-config — запрос **обязательно** с `--static`:
 
 ```sh
-PKG_CONFIG_PATH=/путь/к/unir-1.0.1-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
+PKG_CONFIG_PATH=/путь/к/unir-1.2.0-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
 ```
 
 Кадр из своего конвейера (SDK камеры, буфер OpenCV, bitmap) передаётся видом на существующий буфер, без копирования:

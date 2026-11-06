@@ -22,6 +22,9 @@ struct Box {
 /// rotation.
 /// Code 128 — corner[0] is on the start side, corner[1] on the stop side along
 /// the same edge of the bars, corner[2] and corner[3] on the opposite edge.
+/// QR — the outer edge of the modules in symbol order: corner[0] is the
+/// top-left finder, corner[1] the top-right one, corner[2] the corner without
+/// a finder, corner[3] the bottom-left finder (reversed for a mirrored symbol).
 struct Quad {
     Point corner[4];
 };

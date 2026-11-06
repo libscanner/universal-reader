@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Image.h"
 #include "Symbology.h"
 
@@ -34,6 +36,27 @@ struct Settings {
     /// DataMatrix mode: stream (size hint between frames) or single frames.
     enum class Mode { Stream, Single, Multi };
     Mode mode = Mode::Stream;
+
+    /// Scout network (optional): a .unet model file. Empty — no network, the
+    /// engines go in their own order over the whole frame. With the network it
+    /// first finds the codes (class and region, 15–25 ms), the engines read the
+    /// crops, and the full search follows netFallback.
+    std::string netModel;
+    /// Network confidence below which a detection is ignored.
+    float netConf = 0.35f;
+    /// Full search after the crops. Always — always (the crops only speed up
+    /// the first read); Unread — only for classes the network found but did not
+    /// read, and for a frame where it found nothing: symbologies the network
+    /// does not see are not searched at all. QR and DataMatrix over the whole
+    /// frame — only if the crops read no two-dimensional code. In single-code
+    /// mode — always, if the crops gave nothing.
+    enum class NetFallback { Always, Unread };
+    NetFallback netFallback = NetFallback::Unread;
+    /// Threads per frame for the network crops in multi-code mode (the crops
+    /// are independent): 1 — one by one (default: an embedder with its own
+    /// frame pool keeps it), N — up to N, 0 — one per core. The answer is the
+    /// same with any number.
+    int threads = 1;
 };
 
 } // namespace unir

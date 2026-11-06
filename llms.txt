@@ -25,8 +25,8 @@ The public headers are the authoritative API reference: every type, field and fu
 
 ## Docs
 
-- [Full documentation — C++ and C ABI (Markdown)](https://libscanner.com/en/docs/universal-reader/1.0/cpp.md): installation, linking on Windows and Linux, settings, result fields, licensing, command line
-- [Full documentation — Python (Markdown)](https://libscanner.com/en/docs/universal-reader/1.0/python.md)
+- [Full documentation — C++ and C ABI (Markdown)](https://libscanner.com/en/docs/universal-reader/1.2/cpp.md): installation, linking on Windows and Linux, settings, result fields, licensing, command line
+- [Full documentation — Python (Markdown)](https://libscanner.com/en/docs/universal-reader/1.2/python.md)
 - [All libraries, all documentation in one file](https://libscanner.com/llms-full.txt)
 - [README](README.md): platforms, release files
 
