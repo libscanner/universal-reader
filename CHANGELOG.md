@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 — 2026-11-06
+
+- **The time budget is kept on large photos.** On 12-megapixel photos with a textured background the 1D barcode detector merged thousands of small regions pair by pair before its first budget check, so with `budgetMs` = 60 a frame could take up to 0.7 s (once 2 s). The merge now looks up neighbours by position and bar angle; the budget is overrun by at most ~30 ms. Results are byte-for-byte the same as in 1.2.0.
+
 ## 1.2.0 — 2026-11-06
 
 Licensing for containers; reading is the same as in 1.1.0.
