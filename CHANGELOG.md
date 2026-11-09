@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2 — 2026-11-09
+
+- **Tilted labels are read.** A label tilted away from the camera around a slanted axis turns the barcode into a parallelogram: its bars are no longer perpendicular to the symbol axis, so a scan line across the bars left them before reaching the stop pattern. The reader now estimates this skew and reads such symbols along their axis. On our synthetic SSCC set with a label tilted by 55° and 65°: 50 of 50 frames each (21 and 15 before).
+- **More linear codes on real photos.** EAN/UPC and Code 128 in a skewed region are read from a straightened crop. On public photo sets: DEAL 2843 → 2876 of 3200, SmartEngines 1273 → 1391 of 3000, Open Food Facts 134 → 137 of 145. No false reads on 4231 photos without a barcode.
+- Frames where nothing is read take longer: about 92 → 142 ms on average with all symbologies enabled, within the same time budget.
+
 ## 1.2.1 — 2026-11-06
 
 - **The time budget is kept on large photos.** On 12-megapixel photos with a textured background the 1D barcode detector merged thousands of small regions pair by pair before its first budget check, so with `budgetMs` = 60 a frame could take up to 0.7 s (once 2 s). The merge now looks up neighbours by position and bar angle; the budget is overrun by at most ~30 ms. Results are byte-for-byte the same as in 1.2.0.
