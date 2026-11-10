@@ -6,18 +6,18 @@ statically, so it works with MSVC, Clang, GCC and any language that can call C f
 ## Linux
 
 ```sh
-export PKG_CONFIG_PATH=/path/to/unir-1.2.2-linux-x64/lib/pkgconfig
+export PKG_CONFIG_PATH=/path/to/unir-1.2.3-linux-x64/lib/pkgconfig
 cc main.c -o test_unir_c $(pkg-config --cflags --libs unir_c) -Wl,-rpath,'$ORIGIN'
-cp /path/to/unir-1.2.2-linux-x64/lib/libunir_c.so .
+cp /path/to/unir-1.2.3-linux-x64/lib/libunir_c.so .
 ./test_unir_c label.jpg
 ```
 
 ## Windows, MinGW-w64 GCC
 
 ```sh
-export PKG_CONFIG_PATH=/c/path/to/unir-1.2.2-windows-x64/lib/pkgconfig
+export PKG_CONFIG_PATH=/c/path/to/unir-1.2.3-windows-x64/lib/pkgconfig
 gcc main.c -o test_unir_c.exe $(pkg-config --cflags --libs unir_c)
-cp /c/path/to/unir-1.2.2-windows-x64/bin/unir_c.dll .
+cp /c/path/to/unir-1.2.3-windows-x64/bin/unir_c.dll .
 ```
 
 ## Windows, MSVC
@@ -32,7 +32,7 @@ Then in the Developer Command Prompt for VS (x64):
 
 ```bat
 lib /def:unir_c.def /machine:x64 /out:unir_c.lib
-cl /I C:\path\to\unir-1.2.2-windows-x64\include main.c unir_c.lib
+cl /I C:\path\to\unir-1.2.3-windows-x64\include main.c unir_c.lib
 ```
 
 At run time `unir_c.dll` must be next to the `.exe` (or on `PATH`); after purchase the key file `unir.key`

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.3 — 2026-11-10
+
+- **Large DataMatrix on phone photos.** The DataMatrix engine is updated to dmr 1.1.1: a symbol that fills a big part of a photo (500–1800 pixels across, 15–80 pixels per module) was found but not read, because the sampling grid caught on the print texture inside the modules. When nothing is read, each large candidate is now retried cut out and downscaled to about 240 pixels across, and the whole frame is retried downscaled by 4, 6 and 8 for symbols the detectors see only in pieces (dot-peen marking, laser on metal). With short budgets (60–100 ms) the retries are skipped.
+- On 609 unread photos from our online demo and chat bot (scout network on, 4 s budget): 174 → 198 photos read with one code, 172 → 198 with all codes; no frame lost, no string changed.
+- Frames where nothing is read spend more time, within the same budget.
+
 ## 1.2.2 — 2026-11-09
 
 - **Tilted labels are read.** A label tilted away from the camera around a slanted axis turns the barcode into a parallelogram: its bars are no longer perpendicular to the symbol axis, so a scan line across the bars left them before reaching the stop pattern. The reader now estimates this skew and reads such symbols along their axis. On our synthetic SSCC set with a label tilted by 55° and 65°: 50 of 50 frames each (21 and 15 before).

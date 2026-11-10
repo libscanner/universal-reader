@@ -16,10 +16,10 @@ This repository contains the public headers, examples, documentation links and l
 
 | Platform | C++ static library + C ABI + CLI | Python wheel |
 |---|---|---|
-| Windows x64 | `unir-1.2.2-windows-x64.zip` | `libscanner_unir-1.2.2-py3-none-win_amd64.whl` |
-| Linux x86-64 | `unir-1.2.2-linux-x64.tar.gz` | `libscanner_unir-1.2.2-py3-none-manylinux_2_36_x86_64.whl` |
-| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.2.2-linux-arm64.tar.gz` | `libscanner_unir-1.2.2-py3-none-manylinux_2_36_aarch64.whl` |
-| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.2.2-linux-armhf.tar.gz` | `libscanner_unir-1.2.2-py3-none-manylinux_2_36_armv7l.whl` |
+| Windows x64 | `unir-1.2.3-windows-x64.zip` | `libscanner_unir-1.2.3-py3-none-win_amd64.whl` |
+| Linux x86-64 | `unir-1.2.3-linux-x64.tar.gz` | `libscanner_unir-1.2.3-py3-none-manylinux_2_36_x86_64.whl` |
+| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.2.3-linux-arm64.tar.gz` | `libscanner_unir-1.2.3-py3-none-manylinux_2_36_aarch64.whl` |
+| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.2.3-linux-armhf.tar.gz` | `libscanner_unir-1.2.3-py3-none-manylinux_2_36_armv7l.whl` |
 
 Each platform also has a CLI-only archive (`…-cli.zip` / `…-cli.tar.gz`) with just the `unir` tool.
 
@@ -52,7 +52,7 @@ bin/unir                           command-line tool
 share/doc/unir/licenses/           third-party licenses
 ```
 
-The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.2.2 packages; only the comments differ (translated to English here, Russian in the packages).
+The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.2.3 packages; only the comments differ (translated to English here, Russian in the packages).
 
 ## Quick start
 
@@ -77,7 +77,7 @@ int main() {
 Link statically through pkg-config — the query **must** be `--static`:
 
 ```sh
-PKG_CONFIG_PATH=/path/to/unir-1.2.2-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
+PKG_CONFIG_PATH=/path/to/unir-1.2.3-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
 ```
 
 A frame from your own capture pipeline (camera SDK, OpenCV buffer, bitmap) is passed as a view over the existing buffer, without copying:
