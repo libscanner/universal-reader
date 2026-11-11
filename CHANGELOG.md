@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.5 — 2026-11-11
+
+- **Faster on phone photos.** The DataMatrix engine is updated to dmr 1.1.2: a large candidate is downscaled already in the full pass (to 640 pixels instead of 2048), and the extra detectors for strongly tilted symbols run only on frames whose shorter side is under 1000 pixels — on a phone photo they took up to 2.8 s of a 4 s budget and read nothing.
+- **QR codes taken for a barcode.** With the scout network on, a QR code that the network confidently took for a linear barcode was tried only by the linear engine and was lost. Now, if the linear engine reads nothing on such a find and the QR finder patterns are seen in it, the QR engine is tried too.
+- On 609 unread photos from our online demo and chat bot (scout network on, 2 cores and a 4 s budget, as in our demo; two runs): 186 and 184 → 190 and 191 photos read with one code, median time 3770 → 3570 ms; 189 → 189 and 191 with all codes (the few photos that change either way are read at the very end of the budget). On our set of 130 photos with QR codes, all codes: 126 → 127. Camera, conveyor and EAN sets: the same frames read.
+
 ## 1.2.4 — 2026-11-10
 
 - **No wrong SSCC numbers on heavy motion blur.** With motion blur of about 7 pixels across the bars (about three modules at 2.2 pixels per module) the reader could return a wrong SSCC: both the Code 128 checksum and the SSCC check digit matched and two scan lines of the same symbol agreed, but in one position two characters scored almost the same and the wrong one won. An SSCC line is now accepted only if it is confident overall or the best character beats the second best in every position by a margin. On 7840 synthetic SSCC frames: wrong reads 2 → 0, read 6211 → 6185 (all losses at 7 px motion blur); on real conveyor frames the results are the same. EAN/UPC and other Code 128 are not affected.
