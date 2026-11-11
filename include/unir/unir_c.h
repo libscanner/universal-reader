@@ -75,7 +75,7 @@ extern "C" {
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
 UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.1" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.3". */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.4". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
 /* Versions of the engines inside the build: "dmr 1.1.1, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);

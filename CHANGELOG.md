@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4 — 2026-11-10
+
+- **No wrong SSCC numbers on heavy motion blur.** With motion blur of about 7 pixels across the bars (about three modules at 2.2 pixels per module) the reader could return a wrong SSCC: both the Code 128 checksum and the SSCC check digit matched and two scan lines of the same symbol agreed, but in one position two characters scored almost the same and the wrong one won. An SSCC line is now accepted only if it is confident overall or the best character beats the second best in every position by a margin. On 7840 synthetic SSCC frames: wrong reads 2 → 0, read 6211 → 6185 (all losses at 7 px motion blur); on real conveyor frames the results are the same. EAN/UPC and other Code 128 are not affected.
+
 ## 1.2.3 — 2026-11-10
 
 - **Large DataMatrix on phone photos.** The DataMatrix engine is updated to dmr 1.1.1: a symbol that fills a big part of a photo (500–1800 pixels across, 15–80 pixels per module) was found but not read, because the sampling grid caught on the print texture inside the modules. When nothing is read, each large candidate is now retried cut out and downscaled to about 240 pixels across, and the whole frame is retried downscaled by 4, 6 and 8 for symbols the detectors see only in pieces (dot-peen marking, laser on metal). With short budgets (60–100 ms) the retries are skipped.
