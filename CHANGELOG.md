@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.6 — 2026-11-12
+
+- **No false reads of EAN/UPC and Code 128 on our photo sets.** We searched for false reads on 18,586 images: our 1D photo sets, the whole SmartEngines set (including 6,336 Code 39, Codabar and Code 93 images, where any read of ours is false), 4,231 images without a barcode and conveyor frames. In color, 1.2.5 returned 14 false codes there; in grayscale, 8. Now none, and none on the same images shifted by half a pixel, scaled by 0.9, with noise or JPEG 85. The causes were a piece of a longer symbol (or of a neighbouring one) read as a short code, because the quiet zone beyond the end of the scan line or the crop was treated as empty; and a long Code 128 decoded on the bars of another symbology. Quiet zones are now checked on the frame itself beyond the line and the crop, and a Code 128 must match the expected number of bars and spaces.
+- **More codes on color photos.** When nothing is read on a color frame and a symbol is seen, the frame is read once more from its blue channel: colored bars or labels that lose contrast in the grayscale conversion keep it there. Nearly gray frames skip this pass. On the same images, 111 more codes read in color (5,472 → 5,583), with no false reads.
+- SSCC reading is byte-for-byte the same (5,840 synthetic frames and the tilt grid).
+- Frames where nothing is read take longer in color (about +28 % on average, within the same time budget); about +8 % on average over all frames.
+
 ## 1.2.5 — 2026-11-11
 
 - **Faster on phone photos.** The DataMatrix engine is updated to dmr 1.1.2: a large candidate is downscaled already in the full pass (to 640 pixels instead of 2048), and the extra detectors for strongly tilted symbols run only on frames whose shorter side is under 1000 pixels — on a phone photo they took up to 2.8 s of a 4 s budget and read nothing.
