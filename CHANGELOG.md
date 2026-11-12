@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.7 — 2026-11-12
+
+- **More codes within a short time limit.** With a per-frame limit of up to one second (`budgetMs`, or what remains of `timeoutMs`) and one code requested, the linear-barcode engine first reads a large image downscaled by 3 and then by 2, and only then the full image: on 8–12 megapixel photos the full pass took hundreds of milliseconds and often did not read a large sharp symbol at all (texture on the plateaus of wide bars), while the downscaled one reads it in 5–30 ms. The barcode detector and the cylinder unwarping now also check the limit, so it is exceeded by at most ~20 ms. On 450 photos with barcodes from public sets (one core): within 60 ms 362 → 396, within 100 ms 389 → 421; on 139 real conveyor frames with SSCC the same 130 within 60 and 100 ms as before.
+- Without a time limit (or with a limit over one second) the answers are byte-for-byte those of 1.2.6.
+
 ## 1.2.6 — 2026-11-12
 
 - **No false reads of EAN/UPC and Code 128 on our photo sets.** We searched for false reads on 18,586 images: our 1D photo sets, the whole SmartEngines set (including 6,336 Code 39, Codabar and Code 93 images, where any read of ours is false), 4,231 images without a barcode and conveyor frames. In color, 1.2.5 returned 14 false codes there; in grayscale, 8. Now none, and none on the same images shifted by half a pixel, scaled by 0.9, with noise or JPEG 85. The causes were a piece of a longer symbol (or of a neighbouring one) read as a short code, because the quiet zone beyond the end of the scan line or the crop was treated as empty; and a long Code 128 decoded on the bars of another symbology. Quiet zones are now checked on the frame itself beyond the line and the crop, and a Code 128 must match the expected number of bars and spaces.
