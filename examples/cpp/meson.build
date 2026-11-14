@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT-0
 # Build the unir C++ example against a prebuilt package from GitHub Releases.
 #
-#   meson setup build --pkg-config-path=/path/to/unir-1.2.7-<platform>/lib/pkgconfig
+#   meson setup build --pkg-config-path=/path/to/unir-1.2.8-<platform>/lib/pkgconfig
 #   meson compile -C build
 #
 # The .pc files in the package are relocatable: the unpack directory can be anywhere.

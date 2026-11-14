@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.8 — 2026-11-14
+
+Vector kernels for AVX-512 and ARM (NEON) in all engines; the answers are the same as in 1.2.7.
+
+- **Scout network much faster on AVX-512.** On processors with AVX-512 (Intel Xeon since Skylake-SP, Ice Lake, Sapphire Rapids; AMD Zen 4 and Zen 5) the scout network (`netModel`) runs its convolutions with 512-bit kernels: on an AMD Ryzen 9 9950X3D, one core, the network output is 3.8 times faster than with AVX2, with the same detections. On 64-bit ARM it uses NEON kernels.
+- **Engines.** DataMatrix (dmr 1.1.3): AVX-512 kernels for warping, line segment detection, thresholds and grids, −6.5 % per frame against AVX2 on Zen 5; three more NEON kernels on ARM. Code 128 / GS1-128 / EAN: NEON kernels — −37 % per frame on a Raspberry Pi 4; AVX-512 kernels, −0.9 % on Zen 5. QR: NEON kernels (−7 % on a Raspberry Pi 4) and AVX-512 kernels.
+- No clock drop under AVX-512 on Zen 5 (5.45 vs 5.50 GHz on one core, 5.34 vs 5.39 GHz on all 16). `UNIR_SIMD=avx2` (and `DM_SIMD`, `SSCCR_SIMD`, `QRR_SIMD` for the engines) forces the AVX2 kernels.
+- Checked against 1.2.7 with a 4 s budget, as in our demo: DataMatrix test set 55 of 55, SSCC conveyor photos 139 of 139, QR photos from Wikimedia Commons — the same strings.
+
 ## 1.2.7 — 2026-11-12
 
 - **More codes within a short time limit.** With a per-frame limit of up to one second (`budgetMs`, or what remains of `timeoutMs`) and one code requested, the linear-barcode engine first reads a large image downscaled by 3 and then by 2, and only then the full image: on 8–12 megapixel photos the full pass took hundreds of milliseconds and often did not read a large sharp symbol at all (texture on the plateaus of wide bars), while the downscaled one reads it in 5–30 ms. The barcode detector and the cylinder unwarping now also check the limit, so it is exceeded by at most ~20 ms. On 450 photos with barcodes from public sets (one core): within 60 ms 362 → 396, within 100 ms 389 → 421; on 139 real conveyor frames with SSCC the same 130 within 60 and 100 ms as before.
