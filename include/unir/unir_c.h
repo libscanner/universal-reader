@@ -69,13 +69,13 @@ extern "C" {
  * fields go only at the end of existing structures.
  */
 #define UNIR_C_ABI_VERSION_MAJOR 1
-#define UNIR_C_ABI_VERSION_MINOR 1
+#define UNIR_C_ABI_VERSION_MINOR 2
 
 /* All three follow the snprintf contract: copy what fits into buf (always
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
-UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.1" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.8". */
+UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.2" */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.9". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
 /* Versions of the engines inside the build: "dmr 1.1.2, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
@@ -227,17 +227,26 @@ struct unir_settings {
     int64_t  max_image_pixels;  /* 0 — the 2^29 ceiling; default 100 000 000 */
 
     /* ── ABI 1.1 (unir 1.1.0) ── */
-    const char* net_model;      /* scout network: path to the .unet model (in
-                                 * the package — share/unir/net/seg16a.unet),
-                                 * UTF-8 or the system encoding, as for
-                                 * unir_load_image; read in
+    const char* net_model;      /* your own scout network model .unet instead
+                                 * of the built-in one: UTF-8 or the system
+                                 * encoding, as for unir_load_image; read in
                                  * unir_scanner_create, the string can be freed
-                                 * right after. NULL or "" — no network */
+                                 * right after. A path turns the network on
+                                 * with use_net = 0. NULL or "" — the built-in
+                                 * model, if the network is on (use_net) */
     float    net_conf;          /* network confidence below which a detection
                                  * is ignored; 0 — default 0.35 */
     int      net_fallback;      /* unir_net_fallback_t */
     int      threads;           /* threads for the network crops with several
                                  * codes; 0 — default 1, -1 — one per core */
+
+    /* ── ABI 1.2 (unir 1.2.9) ── */
+    int      use_net;           /* scout network (the model is built into the
+                                 * library, net_model — your own): 0 — auto
+                                 * (default): all symbologies — for any
+                                 * number of codes; chosen ones — with
+                                 * max_codes ≠ 1 and DataMatrix or QR among
+                                 * them; 1 — always, -1 — no network */
 };
 
 /* Settings tag of ABI 1.x: bytes 'U' 'N' 'R' '1' (little-endian). */
@@ -303,9 +312,10 @@ typedef enum {
 UNIR_C_API unir_scanner_t* unir_scanner_create(const unir_settings_t* settings);
 UNIR_C_API void            unir_scanner_destroy(unir_scanner_t* scanner);
 
-/* The scout network is loaded: 1 — yes; 0 — net_model is not set or the file
- * was not read (why — unir_scanner_net_error; the scanner then works without
- * the network). ABI 1.1. */
+/* The scout network is loaded: 1 — yes; 0 — the network is off (use_net = -1
+ * or auto does not turn it on) or the model was not read (why —
+ * unir_scanner_net_error; the scanner then works without the network).
+ * ABI 1.1. */
 UNIR_C_API int    unir_scanner_net_ready(const unir_scanner_t* scanner);
 /* Why the network did not load; an empty string — it loaded or is not set.
  * snprintf contract. ABI 1.1. */

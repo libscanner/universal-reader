@@ -74,8 +74,8 @@ public:
 
     const Settings& settings() const;
 
-    /// The scout network is loaded (Settings::netModel is set and the file was
-    /// read).
+    /// The scout network is loaded (it is on by netEnabled(settings); the
+    /// built-in model or the file was read).
     bool netReady() const;
     /// Why the network did not load; empty — it loaded or is not set.
     const std::string& netError() const;

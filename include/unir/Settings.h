@@ -37,10 +37,22 @@ struct Settings {
     enum class Mode { Stream, Single, Multi };
     Mode mode = Mode::Stream;
 
-    /// Scout network (optional): a .unet model file. Empty — no network, the
-    /// engines go in their own order over the whole frame. With the network it
-    /// first finds the codes (class and region, 15–25 ms), the engines read the
-    /// crops, and the full search follows netFallback.
+    /// Scout network. With it, it first finds the codes (class and region,
+    /// 15–25 ms), the engines read the crops, and the full search follows
+    /// netFallback; without it, the engines go in their own order over the
+    /// whole frame. The model is built into the library (seg16a); netModel —
+    /// your own model from a file. Auto (default, unir 1.2.9) — by the task,
+    /// see netEnabled(): no symbologies chosen (all are searched) — the
+    /// network for any number of codes; chosen — only for several codes
+    /// (maxCodes ≠ 1) and if DataMatrix or QR is among them. Barcodes and a
+    /// single code of a known kind are faster without the network at the same
+    /// reading; two-dimensional codes gain a lot from it. On — always, Off —
+    /// no network.
+    enum class NetMode { Auto, On, Off };
+    NetMode netMode = NetMode::Auto;
+    /// Your own network model (.unet) instead of the built-in one; empty — the
+    /// built-in one. A path given with Auto always turns the network on (as
+    /// before unir 1.2.9).
     std::string netModel;
     /// Network confidence below which a detection is ignored.
     float netConf = 0.35f;
@@ -58,5 +70,13 @@ struct Settings {
     /// same with any number.
     int threads = 1;
 };
+
+/// Whether the scout network is on with these settings (Settings::netMode).
+inline bool netEnabled(const Settings& s) {
+    if (s.netMode != Settings::NetMode::Auto) return s.netMode == Settings::NetMode::On;
+    if (!s.netModel.empty()) return true;
+    if ((s.symbologies & kAllSymbologies) == kAllSymbologies) return true;   // kind of code not given
+    return s.maxCodes != 1 && (has(s.symbologies, Symbology::DataMatrix) || has(s.symbologies, Symbology::Qr));
+}
 
 } // namespace unir

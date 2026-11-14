@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.9 — 2026-11-15
+
+- **Scout network built in and on by itself.** The network model is now inside the library (no separate file). `Settings::netMode` (C ABI `use_net`, Python `use_net`, CLI `--net auto|on|off`): **Auto** (default) — with no symbologies chosen, the network for any number of codes; with symbologies chosen, for several codes when DataMatrix or QR is among them (barcodes, and a single code of a known kind, are as well read and faster without it); **On** — always; **Off** — never. `netModel` (your own `.unet` file) keeps working and turns the network on, as before.
+- **Many codes in a frame read much better on one thread.** With more than 8 network detections and one thread, the crops used to be skipped and the whole frame searched; now the crops are read at any count. Crops of real photos, 9–50 codes per image, all codes, 4 s budget, one thread: 63–79 % → 85–92 % of codes read (DataMatrix 11 % → 70 %), and faster. Stress set of 1,000 synthetic frames with 3–300 codes: about as many codes as without the network (−1 %), 1.4 times faster.
+- **Known kind and number of codes** (real photo crops, share of images with all N codes read, without → with the network): DataMatrix, 5 codes 14 % → 52 %, 10 codes 0 % → 36 %; QR, 5 codes 46 % → 98 %, 10 codes 30 % → 88 %, and 2–4 times faster.
+- **No false barcode from half a symbol.** A network detection covering half of an EAN-13 could make the linear engine read a different, checksum-valid number. A barcode whose box lies almost entirely inside a larger barcode already read is now dropped.
+- **AVX2 network kernels** written by hand: the network output is 2.6–3.6 times faster on AVX2 processors, with the same detections.
+- **Second barcode of a label with several threads.** With the network on and `threads` above 1, a crop returned at most one code, so when one detection covered two barcodes (an SSCC and an EAN on the same label) the second one was lost. Now a crop returns as many codes as requested, as with one thread, and the answer does not depend on the number of threads: on 139 conveyor photos with SSCC, 2 threads, all codes, 144 → 251 codes.
+- C ABI 1.2: the `use_net` field at the end of `unir_settings_t`; callers built with older headers get Auto.
+- Checked against 1.2.8 with a 4 s budget and 2 threads, as in our demo, all codes. With `--net off` the answers are those of 1.2.8 (one SSCC photo read at the very end of the budget differs). With the default Auto: DataMatrix test set 55 of 55; SSCC conveyor photos 139 of 139, 251 of 252 codes; QR photos from Wikimedia Commons — 68 instead of 64 photos with a code, but 93 instead of 94 codes: after a QR is read in a crop, the full QR search over the frame is skipped, and a small QR missed by the network next to it is lost (the frame is read in 0.1–0.5 s instead of 4 s). Set `netMode` to `Off` if you need every QR of a photo with many of them.
+
 ## 1.2.8 — 2026-11-14
 
 Vector kernels for AVX-512 and ARM (NEON) in all engines; the answers are the same as in 1.2.7.

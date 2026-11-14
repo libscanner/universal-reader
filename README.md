@@ -4,7 +4,7 @@
 
 Reads codes of several symbologies in a frame with one call: **DataMatrix** (ECC 200, including GS1 / Chestny ZNAK marking codes — the Russian national product marking system), **GS1-128** (SSCC on logistics labels), **Code 128**, retail barcodes **EAN-13, EAN-8, UPC-A, UPC-E** and **QR** (model 2, versions 1–40, including GS1 QR).
 
-`unir` is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. One time budget per frame is shared between all symbologies, and one license covers them all. An optional scout network (shipped in the package) finds the codes first and speeds up reading of several codes in a frame.
+`unir` is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. One time budget per frame is shared between all symbologies, and one license covers them all. A scout network built into the library finds the codes first and makes reading of several codes in a frame faster and more complete; it switches on by itself when it helps (`Settings::netMode`).
 
 This repository contains the public headers, examples, documentation links and license texts. **It contains no library source code.** Prebuilt binaries are attached to [GitHub Releases](https://github.com/libscanner/universal-reader/releases/latest).
 
@@ -16,10 +16,10 @@ This repository contains the public headers, examples, documentation links and l
 
 | Platform | C++ static library + C ABI + CLI | Python wheel |
 |---|---|---|
-| Windows x64 | `unir-1.2.8-windows-x64.zip` | `libscanner_unir-1.2.8-py3-none-win_amd64.whl` |
-| Linux x86-64 | `unir-1.2.8-linux-x64.tar.gz` | `libscanner_unir-1.2.8-py3-none-manylinux_2_36_x86_64.whl` |
-| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.2.8-linux-arm64.tar.gz` | `libscanner_unir-1.2.8-py3-none-manylinux_2_36_aarch64.whl` |
-| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.2.8-linux-armhf.tar.gz` | `libscanner_unir-1.2.8-py3-none-manylinux_2_36_armv7l.whl` |
+| Windows x64 | `unir-1.2.9-windows-x64.zip` | `libscanner_unir-1.2.9-py3-none-win_amd64.whl` |
+| Linux x86-64 | `unir-1.2.9-linux-x64.tar.gz` | `libscanner_unir-1.2.9-py3-none-manylinux_2_36_x86_64.whl` |
+| Linux ARM64 (Raspberry Pi 3/4/5, 64-bit) | `unir-1.2.9-linux-arm64.tar.gz` | `libscanner_unir-1.2.9-py3-none-manylinux_2_36_aarch64.whl` |
+| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32-bit) | `unir-1.2.9-linux-armhf.tar.gz` | `libscanner_unir-1.2.9-py3-none-manylinux_2_36_armv7l.whl` |
 
 Each platform also has a CLI-only archive (`…-cli.zip` / `…-cli.tar.gz`) with just the `unir` tool.
 
@@ -52,7 +52,7 @@ bin/unir                           command-line tool
 share/doc/unir/licenses/           third-party licenses
 ```
 
-The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.2.8 packages; only the comments differ (translated to English here, Russian in the packages).
+The headers in [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) of this repository declare exactly the same API as the headers shipped in the 1.2.9 packages; only the comments differ (translated to English here, Russian in the packages).
 
 ## Quick start
 
@@ -77,7 +77,7 @@ int main() {
 Link statically through pkg-config — the query **must** be `--static`:
 
 ```sh
-PKG_CONFIG_PATH=/path/to/unir-1.2.8-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
+PKG_CONFIG_PATH=/path/to/unir-1.2.9-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
 ```
 
 A frame from your own capture pipeline (camera SDK, OpenCV buffer, bitmap) is passed as a view over the existing buffer, without copying:
