@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.10 — 2026-11-15
+
+- **All available threads by default.** `Settings::threads` (C ABI `threads`, Python `threads`, CLI `--threads`) now defaults to 0 — all threads available to the process, where available is the smallest of the core count, the CPU affinity mask and the container's CPU quota (cgroup), so in a container the library does not start threads for every host core. The threads are used by the engines reading the frame (DataMatrix, QR, linear), by the scout network and by its crops; an embedder with its own frame pool sets 1. Before, the default was 1.
+- **dmr 1.2.0 inside**, with its own network switched off (unir has its own), and the same thread limit as unir.
+- **Faster network, on several threads.** The scout network output is split across threads; the frame is converted to gray and downscaled row by row without a full-size float copy. Same detections, bit for bit.
+- **Fixed:** in multi-code mode with `threads` above 1 the crops could return more codes than requested (`multi(2)` gave 3); this was also the case in 1.2.9 when `threads` was set above 1.
+- Checked against 1.2.9 with a 4 s budget and 2 threads, as in our demo, all codes: with the network the answers are the same frame by frame (DataMatrix test set 55 of 55; SSCC conveyor photos 139 of 139, 251 codes; QR photos from Wikimedia Commons 68 with 93 codes); with `--net off` the same, one more QR photo read. Without `--threads`, on two cores, unir takes exactly two threads.
+
 ## 1.2.9 — 2026-11-15
 
 - **Scout network built in and on by itself.** The network model is now inside the library (no separate file). `Settings::netMode` (C ABI `use_net`, Python `use_net`, CLI `--net auto|on|off`): **Auto** (default) — with no symbologies chosen, the network for any number of codes; with symbologies chosen, for several codes when DataMatrix or QR is among them (barcodes, and a single code of a known kind, are as well read and faster without it); **On** — always; **Off** — never. `netModel` (your own `.unet` file) keeps working and turns the network on, as before.

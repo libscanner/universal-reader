@@ -75,7 +75,7 @@ extern "C" {
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
 UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.2" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.9". */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.10". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
 /* Versions of the engines inside the build: "dmr 1.1.2, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
@@ -237,8 +237,10 @@ struct unir_settings {
     float    net_conf;          /* network confidence below which a detection
                                  * is ignored; 0 — default 0.35 */
     int      net_fallback;      /* unir_net_fallback_t */
-    int      threads;           /* threads for the network crops with several
-                                 * codes; 0 — default 1, -1 — one per core */
+    int      threads;           /* threads per frame (engines, network, crops):
+                                 * 0 — default, all threads available to the
+                                 * process (unir 1.2.10; before — 1); -1 — also
+                                 * all available; N — at most N */
 
     /* ── ABI 1.2 (unir 1.2.9) ── */
     int      use_net;           /* scout network (the model is built into the

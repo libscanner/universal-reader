@@ -64,11 +64,17 @@ struct Settings {
     /// mode — always, if the crops gave nothing.
     enum class NetFallback { Always, Unread };
     NetFallback netFallback = NetFallback::Unread;
-    /// Threads per frame for the network crops in multi-code mode (the crops
-    /// are independent): 1 — one by one (default: an embedder with its own
-    /// frame pool keeps it), N — up to N, 0 — one per core. The answer is the
-    /// same with any number.
-    int threads = 1;
+    /// Threads per frame: 0 — all threads available to the process (default),
+    /// N — at most N, 1 — one thread (for an embedder with its own frame pool).
+    ///
+    /// Available means the smallest of the machine's core count, the process's
+    /// CPU affinity mask and the container's CPU quota: in a container with a
+    /// quota the library does not start threads for every host core. The
+    /// threads are used by the engines reading the frame (dmr, qrr, ssccr), by
+    /// the network and by the reading of its crops in multi-code mode. What is
+    /// read does not depend on the number of threads, except for frames that
+    /// hit the time limit (a crop has its own limit, 250 ms).
+    int threads = 0;
 };
 
 /// Whether the scout network is on with these settings (Settings::netMode).
