@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.11 — 2026-11-15
+
+- **Tighter DataMatrix crops.** A DataMatrix found by the network is read first from a crop with a 5 % margin (it was 30 %), and only if that fails, again with 30 %. The wide crop took in the label edge and the background, and the DataMatrix engine fell into a deep search that did not fit the crop's 250 ms. QR detections — and DataMatrix detections whose wide crop shows QR finder patterns — are read with the wide crop at once: a QR needs its quiet zone.
+- DataMatrix, 2 threads, 4 s budget, all codes: 12-megapixel frames with 16 symbols — 95.5 % of codes instead of 86.9 %; crops of real photos with one symbol — 100 % instead of 90 %, 33 ms instead of 235; with 8 symbols — 95.2 % instead of 82.5 %; with 16 — 88.2 % instead of 79.0 %. QR and linear barcodes: the same codes read.
+- **dmr 1.2.1 inside.**
+- Checked against 1.2.10 on the sets of the previous checks (DataMatrix test set, SSCC conveyor photos, QR photos from Wikimedia Commons), one code and all codes: the same photos and codes read. On the QR photos with all codes the median frame time grew from 0.71 to 0.99 s (mean +3 %): DataMatrix-like detections on photos are now read twice.
+
 ## 1.2.10 — 2026-11-15
 
 - **All available threads by default.** `Settings::threads` (C ABI `threads`, Python `threads`, CLI `--threads`) now defaults to 0 — all threads available to the process, where available is the smallest of the core count, the CPU affinity mask and the container's CPU quota (cgroup), so in a container the library does not start threads for every host core. The threads are used by the engines reading the frame (DataMatrix, QR, linear), by the scout network and by its crops; an embedder with its own frame pool sets 1. Before, the default was 1.
