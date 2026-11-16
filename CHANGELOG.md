@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.12 — 2026-11-17
+
+Industrial camera frames of 20–40 megapixels: the scout network sees all codes on them, also on very dark and overexposed frames, and the frame is read several times faster.
+
+- **Network on large and dark frames.** On frames larger than 8 MP the network looks at a 1 MP input instead of 250 thousand pixels; dark and low-contrast frames are stretched in brightness before the network.
+- **Short round of crops with cancellation.** When the number of codes is given (`maxCodes` > 0), crops are first read with a short time limit (25 ms tight, 80 ms wide); as soon as that many codes are read, the remaining crops are cancelled; crops left unread get the full limit in the second round (a crop smaller than the read ones — with the wide window).
+- **Dense large frames.** On frames larger than 8 MP with many detections, barcodes left unread by the full-frame pass are finished from crops; a large barcode box gets half its side as margin instead of one and a half.
+- 12 threads, frame from memory, 10 DataMatrix per frame: 20 MP camera frames — 785 of 810 codes instead of 611, median 84 ms instead of 438; 40 MP — 200 of 200 instead of 156, 115 ms instead of 618; overexposed 20 MP — 200 of 200 instead of 142. Synthetic frames with up to 50 mixed codes: dark — 99.7 % of codes instead of 96.7 %; 24–48 MP dark — 98.7 % instead of 91.0 %, EAN-13 there 97.3 % instead of 87.7 %.
+- **dmr 1.2.2 inside.**
+- Checked against 1.2.11 on the sets of the previous checks (DataMatrix test set, SSCC conveyor photos, QR photos from Wikimedia Commons), 2 threads, 4 s budget, all codes: the same photos and codes read.
+
 ## 1.2.11 — 2026-11-15
 
 - **Tighter DataMatrix crops.** A DataMatrix found by the network is read first from a crop with a 5 % margin (it was 30 %), and only if that fails, again with 30 %. The wide crop took in the label edge and the background, and the DataMatrix engine fell into a deep search that did not fit the crop's 250 ms. QR detections — and DataMatrix detections whose wide crop shows QR finder patterns — are read with the wide crop at once: a QR needs its quiet zone.
