@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.14 — 2026-11-17
+
+- **Faster scout network, the same output.** Tensors are no longer zero-filled and reallocated on every frame (they live between frames, in buffers shared by lifetime — 26 MB at a 1 MP input); the upsampling is fused with the addition; SiLU runs right after each convolution strip; the frame is downsized with AVX2 kernels; wide 3×3 convolutions run directly, without im2col. The network output is bit-identical to 1.2.13. A box with 10 DataMatrix, frame from memory, 12 threads: 20 MP — median 81 → 72 ms, 40 MP — 114 → 78 ms.
+- **Wide retry right away on frames of same-size codes.** In the all-codes mode a crop not read in the tight window waited for the wide window until all tight crops were done, and each false detection took the whole crop limit (350 ms). On 2 threads that used up the crop share of the budget, and codes with a large module (cut by the tight window, read by the wide one in 5–35 ms) were lost. Now the wide retry follows at once when the read codes are of one size and few similar detections are still waiting. 20 MP box, 2 threads, all codes: 785 of 810 codes instead of 739.
+- **A square "barcode" detection is also read as DataMatrix.** The network sometimes takes a DataMatrix for a barcode (confidence 0.998); a confident barcode detection with nearly square sides now also gets a DataMatrix attempt in a 2D window. A 9 MP camera with 24 DataMatrix per frame: 99.8 % of codes instead of 98.1 %, the same time; our stress set of mixed codes: 6988 codes instead of 6908–6915.
+- **`ScanResult::timedOut` only by the frame deadline.** The own limit of a crop (250 ms) set it too, and the utility printed "budget: exhausted" without `--budget-ms`. Now the flag means the budget or the safety timeout ran out; the utility names which one, and says so when the budget ran out while the image file was still being read (it used to say the image could not be decoded).
+- **License server refusal explained**: the code `CLIENT_OUTDATED` (a request without a nonce) — an outdated program or a request altered on the way.
+- **dmr 1.2.4 inside.**
+- Checked against 1.2.13 on the sets of the previous checks (DataMatrix test set, SSCC conveyor photos, QR photos from Wikimedia Commons), 2 threads, 4 s budget, all codes: the same codes; one QR photo is read at 3.87 s of the 4 s budget by both versions and now and then misses it.
+
 ## 1.2.13 — 2026-11-17
 
 - **Cancelled crops are dropped by every engine.** When the given number of codes is read, the crops of false detections still running are cancelled. dmr dropped such a crop, but then the QR engine went on with it, and the short round still started the wide retry. A box with 10 DataMatrix, 20 MP, all symbologies, frame from memory, 12 threads: crops ran 43 ms past the last code (p90 61), now 5 (p90 15); median 129 → 96 ms, p90 365 → 271 ms; 40 MP — 190 → 155 ms. With DataMatrix only — as in 1.2.12.
