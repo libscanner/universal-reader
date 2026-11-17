@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.13 — 2026-11-17
+
+- **Cancelled crops are dropped by every engine.** When the given number of codes is read, the crops of false detections still running are cancelled. dmr dropped such a crop, but then the QR engine went on with it, and the short round still started the wide retry. A box with 10 DataMatrix, 20 MP, all symbologies, frame from memory, 12 threads: crops ran 43 ms past the last code (p90 61), now 5 (p90 15); median 129 → 96 ms, p90 365 → 271 ms; 40 MP — 190 → 155 ms. With DataMatrix only — as in 1.2.12.
+- The barcode mask is built once per frame pass instead of once per masked engine; the QR finder check of a crop window is not repeated. Same results.
+- **dmr 1.2.3 inside.**
+- Checked against 1.2.12 on the sets of the previous checks (DataMatrix test set, SSCC conveyor photos, QR photos from Wikimedia Commons), 2 threads, 4 s budget, one code and all codes: the same codes; the few differences come from the time limit — 1.2.12 loses the same photos on a repeated run.
+
 ## 1.2.12 — 2026-11-17
 
 Industrial camera frames of 20–40 megapixels: the scout network sees all codes on them, also on very dark and overexposed frames, and the frame is read several times faster.
