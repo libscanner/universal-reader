@@ -16,10 +16,10 @@
 
 | Платформа | Статическая библиотека C++ + C ABI + утилита | Колесо Python |
 |---|---|---|
-| Windows x64 | `unir-1.2.14-windows-x64.zip` | `libscanner_unir-1.2.14-py3-none-win_amd64.whl` |
-| Linux x86-64 | `unir-1.2.14-linux-x64.tar.gz` | `libscanner_unir-1.2.14-py3-none-manylinux_2_36_x86_64.whl` |
-| Linux ARM64 (Raspberry Pi 3/4/5, 64 бит) | `unir-1.2.14-linux-arm64.tar.gz` | `libscanner_unir-1.2.14-py3-none-manylinux_2_36_aarch64.whl` |
-| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32 бит) | `unir-1.2.14-linux-armhf.tar.gz` | `libscanner_unir-1.2.14-py3-none-manylinux_2_36_armv7l.whl` |
+| Windows x64 | `unir-1.2.15-windows-x64.zip` | `libscanner_unir-1.2.15-py3-none-win_amd64.whl` |
+| Linux x86-64 | `unir-1.2.15-linux-x64.tar.gz` | `libscanner_unir-1.2.15-py3-none-manylinux_2_36_x86_64.whl` |
+| Linux ARM64 (Raspberry Pi 3/4/5, 64 бит) | `unir-1.2.15-linux-arm64.tar.gz` | `libscanner_unir-1.2.15-py3-none-manylinux_2_36_aarch64.whl` |
+| Linux ARMv7 (Raspberry Pi 2/3/4/5, 32 бит) | `unir-1.2.15-linux-armhf.tar.gz` | `libscanner_unir-1.2.15-py3-none-manylinux_2_36_armv7l.whl` |
 
 Для каждой платформы есть и архив только с утилитой `unir` (`…-cli.zip` / `…-cli.tar.gz`).
 
@@ -52,7 +52,7 @@ bin/unir                           утилита командной строк�
 share/doc/unir/licenses/           лицензии стороннего кода
 ```
 
-Заголовки в [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) этого репозитория объявляют тот же API, что заголовки поставки 1.2.14; отличаются только комментарии (здесь — на английском, в поставке — на русском).
+Заголовки в [`include/`](https://github.com/libscanner/universal-reader/tree/main/include/unir) этого репозитория объявляют тот же API, что заголовки поставки 1.2.15; отличаются только комментарии (здесь — на английском, в поставке — на русском).
 
 ## Быстрый старт
 
@@ -77,7 +77,7 @@ int main() {
 Статическая компоновка через pkg-config — запрос **обязательно** с `--static`:
 
 ```sh
-PKG_CONFIG_PATH=/путь/к/unir-1.2.14-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
+PKG_CONFIG_PATH=/путь/к/unir-1.2.15-linux-x64/lib/pkgconfig pkg-config --static --cflags --libs unir
 ```
 
 Кадр из своего конвейера (SDK камеры, буфер OpenCV, bitmap) передаётся видом на существующий буфер, без копирования:

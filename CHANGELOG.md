@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.15 — 2026-11-18
+
+- **Codes the network missed on sheets and boxes.** When the read codes of one symbology and size form a grid (a sheet of labels, a box), the empty nodes of the grid — inside it and one ring around it — are read as crops with a short time limit, round after round while a round adds codes; a node with no pattern in it (blank paper) is skipped. A sheet of 20 DataMatrix from a 5 MP camera: 96.2 → 99.9 % of codes; sheets of QR, EAN-13 and SSCC: 96.2 → 98.3 % (all codes, 12 threads).
+- **A false detection no longer holds the frame in the all-codes mode.** Every crop first gets a short limit (80 ms); a real code is read in 5–60 ms, a false one used to take the full limit in the tight and then the wide window (~750 ms). Barcode crops still get the full limit at once (in 80 ms ssccr read only one or two codes of a window holding several). Crops not read in the short round get the full limit when they look like the read codes, or all of them when the read codes differ in size and a 2D code is among them. The DataMatrix sheet: median 986 → 388 ms; a 20 MP box with 10 DataMatrix on 2 threads: 2508 → 1294 ms, 12 threads: 1686 → 772 ms.
+- **Dense frames: similar-size measure from codes read before the crops.** On a dense frame barcodes are read over the whole frame first, and the crops (2D only) could read nothing — the "looks like the read codes" measure stayed empty, small false DataMatrix detections got the full round and started a whole-frame DataMatrix/QR search (about 3 s). Now the measure comes from the codes already read.
+- **CLI: `--batch` and `--folder` print an image's lines right after reading it** (they used to be buffered until the end of the run).
+- **dmr 1.2.4 inside**, unchanged.
+- Checked against 1.2.14 with the shipped CLI (all codes, 2 threads, 4 s): registry DataMatrix test images 55/55 in both; conveyor SSCC/EAN frames — 247–249 codes vs 241–251 (two alternating runs each), 0.8–0.9 s vs 0.9–1.0 s per frame; QR (401 Wikimedia Commons photos) — 352 vs 344.
+
 ## 1.2.14 — 2026-11-17
 
 - **Faster scout network, the same output.** Tensors are no longer zero-filled and reallocated on every frame (they live between frames, in buffers shared by lifetime — 26 MB at a 1 MP input); the upsampling is fused with the addition; SiLU runs right after each convolution strip; the frame is downsized with AVX2 kernels; wide 3×3 convolutions run directly, without im2col. The network output is bit-identical to 1.2.13. A box with 10 DataMatrix, frame from memory, 12 threads: 20 MP — median 81 → 72 ms, 40 MP — 114 → 78 ms.
