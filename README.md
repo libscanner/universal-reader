@@ -1,12 +1,14 @@
 **English** | [Русский](https://github.com/libscanner/universal-reader/blob/main/README.ru.md)
 
-# Universal code reader library (unir)
+# libscanner unir — Universal code reader library
 
 Reads codes of several symbologies in a frame with one call: **DataMatrix** (ECC 200, including GS1 / Chestny ZNAK marking codes — the Russian national product marking system), **GS1-128** (SSCC on logistics labels), **Code 128**, retail barcodes **EAN-13, EAN-8, UPC-A, UPC-E** and **QR** (model 2, versions 1–40, including GS1 QR).
 
-`unir` is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. One time budget per frame is shared between all symbologies, and one license covers them all. A scout network built into the library finds the codes first and makes reading of several codes in a frame faster and more complete; it switches on by itself when it helps (`Settings::netMode`).
+**libscanner unir** (`pip install libscanner-unir`) is a commercial, closed-source C++20 library with a flat C ABI, a Python package and a command-line tool. One time budget per frame is shared between all symbologies, and one license covers them all. A scout network built into the library finds the codes first and makes reading of several codes in a frame faster and more complete; it switches on by itself when it helps (`Settings::netMode`).
 
 This repository contains the public headers, examples, documentation links and license texts. **It contains no library source code.** Prebuilt binaries are attached to [GitHub Releases](https://github.com/libscanner/universal-reader/releases/latest).
+
+**Not open source:** every build runs a 30-day trial on a machine, then needs a paid license from <https://libscanner.com/en/pricing/>.
 
 **For AI coding assistants:** start with [`llms.txt`](llms.txt) — an index of the headers, examples and the full documentation in Markdown.
 
