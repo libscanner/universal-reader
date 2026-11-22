@@ -72,10 +72,11 @@ private:
     PixelFormat fmt_ = PixelFormat::Gray8;
 };
 
-/// Frame size limits — the same as in the engines.
+/// Frame size limits — the same as in the barcode engine (the area is larger than in dmr).
 struct ImageLimits {
     int       maxSide   = 16384;        ///< 0 — kHardMaxSide
-    long long maxPixels = 100'000'000;  ///< 0 — kHardMaxPixels
+    /// 200 MP (dmr: 100): 100–111 MP camera frames used to be rejected whole.
+    long long maxPixels = 200'000'000;  ///< 0 — kHardMaxPixels
 
     static constexpr int       kHardMaxSide   = 65535;
     static constexpr long long kHardMaxPixels = 1LL << 29;

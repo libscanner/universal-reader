@@ -75,7 +75,7 @@ extern "C" {
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
 UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.2" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.15". */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.16". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
 /* Versions of the engines inside the build: "dmr 1.1.2, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
@@ -160,7 +160,7 @@ typedef struct unir_settings unir_settings_t;
  *
  * _ex — with the frame size limit (max_image_side, max_image_pixels) and the
  * decoding deadline (the smaller of budget_ms and timeout_ms) from settings;
- * NULL — defaults (16384 per side, 100 MP, 10 s). unir_load_image() is the
+ * NULL — defaults (16384 per side, 200 MP, 10 s). unir_load_image() is the
  * same with NULL. A frame above the limit is not decoded: the check uses the
  * file header.
  */
@@ -224,7 +224,7 @@ struct unir_settings {
                                  * default 10 000 */
     int      max_image_side;    /* larger frame — UNIR_STATUS_IMAGE_TOO_LARGE;
                                  * 0 — the 65535 ceiling; default 16384 */
-    int64_t  max_image_pixels;  /* 0 — the 2^29 ceiling; default 100 000 000 */
+    int64_t  max_image_pixels;  /* 0 — the 2^29 ceiling; default 200 000 000 */
 
     /* ── ABI 1.1 (unir 1.1.0) ── */
     const char* net_model;      /* your own scout network model .unet instead

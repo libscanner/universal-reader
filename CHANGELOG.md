@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.16 — 2026-11-22
+
+- **Barcodes: more codes on dense and difficult frames, fewer false reads.** The 1D engine got an overhaul driven by our stress sets (frames with 1–100+ barcodes of all symbologies, blur, skew, low contrast, neighbouring symbols): a check against the nearest rival text for EAN/UPC and Code 128 decisions, skewed candidates and straightened crops beyond the first few, motion-blurred EAN, UPC-E no longer read on half of an EAN-13, GS1-128 with a wrong key check digit not returned, Code 128 read in place of an EAN only where the quadrilaterals match. All codes, 4 s budget, 12 threads, against 1.2.15: barcodes 55.5 → 66.8 %, 58.3 → 66.6 % and 47.6 → 65.5 % on our three stress sets (17 522 and 24 996 barcodes in the larger two); false reads 5 → 2 and 14 → 3 on the first two.
+- **Faster barcode reading.** Fewer hypotheses fitted per segment (only symbol lengths consistent with the edges, only near-best hypotheses refined), no re-reading of already read codes in the downscaled retry, one cylinder unwrap axis, vectorized sample normalization. Sheets of labels (2 threads, 64 codes, 4 s): median 613 → 350 ms per frame with 130 more codes; a shelf photo set: 1013 → 488 ms. With barcodes taking less time, more of the budget goes to DataMatrix on mixed frames: 38–40 → 53 % and 44–45 → 56 % of DataMatrix on the stress sets.
+- **Frame size limit raised to 200 MP by default** (was 100 MP); `--max-pixels` and the C/Python settings still set it.
+- **Nested codes compared by quadrilaterals**, not by bounding boxes: a code inside another code's quadrilateral is the same symbol, a neighbour whose box merely overlaps is kept.
+- **dmr 1.2.4 inside**, unchanged.
+- Checked against 1.2.15 with the shipped Linux CLI (all codes, 2 threads, 4 s, alternating runs): registry DataMatrix test images 55/55 in both; conveyor SSCC/EAN frames — 256–257 codes vs 250–251, 112 s vs 118 s per set; QR (401 Wikimedia Commons photos) — 369–370 vs 368–370, the same codes. A false-read search over 18 666 public and negative photos found no false codes.
+
 ## 1.2.15 — 2026-11-18
 
 - **Codes the network missed on sheets and boxes.** When the read codes of one symbology and size form a grid (a sheet of labels, a box), the empty nodes of the grid — inside it and one ring around it — are read as crops with a short time limit, round after round while a round adds codes; a node with no pattern in it (blank paper) is skipped. A sheet of 20 DataMatrix from a 5 MP camera: 96.2 → 99.9 % of codes; sheets of QR, EAN-13 and SSCC: 96.2 → 98.3 % (all codes, 12 threads).
