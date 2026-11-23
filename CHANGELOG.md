@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.17 — 2026-11-23
+
+- **Scout network in 8-bit integers.** The built-in network that finds codes on the frame now runs on int8 weights and activations (AVX2, AVX-VNNI, AVX-512 VNNI and NEON kernels, chosen at run time; a scalar reference everywhere else). The model was fine-tuned with quantization in the loop against the float network, so the code boxes keep their size and no codes are lost to tighter crops. The network output is bit-identical between the kernels and to the reference implementation.
+- On a production line with a frame budget the network now leaves more time to the engines: with all codes and a 60 ms budget, frames with up to 50 codes give 30 % more codes on all threads and 46 % more on one thread; a conveyor frame is read 11–26 % faster with the same codes.
+- **Crop pool: late crops no longer join a finished task**, and the small network layers run without the pool (handing them out cost more than the work).
+- The automatic network rule is unchanged: with all symbologies the network runs for any number of codes; with chosen symbologies — only when several codes are wanted and DataMatrix or QR is among them (one code of a known kind is read faster without it).
+- **dmr 1.2.4 inside**, unchanged.
+- Checked against 1.2.16 with the shipped Linux CLI (all codes, 2 threads, 4 s, alternating runs): registry DataMatrix test images 55/55 in both, 3.2 → 2.3 s per set; pharmacy conveyor (300 frames) — 299 codes in both, 24.1 → 16.3 s; synthetic frames with 1–50 codes (40 frames) — 1055–1056 codes vs 1056, 9.1 → 8.8 s; QR (401 Wikimedia Commons photos) — 366–369 codes vs 363–366, 757 → 719 s (three photos read at 3.87–3.97 s of the budget by 1.2.16 run out of time in 1.2.17, five others go the other way).
+
 ## 1.2.16 — 2026-11-22
 
 - **Barcodes: more codes on dense and difficult frames, fewer false reads.** The 1D engine got an overhaul driven by our stress sets (frames with 1–100+ barcodes of all symbologies, blur, skew, low contrast, neighbouring symbols): a check against the nearest rival text for EAN/UPC and Code 128 decisions, skewed candidates and straightened crops beyond the first few, motion-blurred EAN, UPC-E no longer read on half of an EAN-13, GS1-128 with a wrong key check digit not returned, Code 128 read in place of an EAN only where the quadrilaterals match. All codes, 4 s budget, 12 threads, against 1.2.15: barcodes 55.5 → 66.8 %, 58.3 → 66.6 % and 47.6 → 65.5 % on our three stress sets (17 522 and 24 996 barcodes in the larger two); false reads 5 → 2 and 14 → 3 on the first two.
