@@ -69,13 +69,13 @@ extern "C" {
  * fields go only at the end of existing structures.
  */
 #define UNIR_C_ABI_VERSION_MAJOR 1
-#define UNIR_C_ABI_VERSION_MINOR 2
+#define UNIR_C_ABI_VERSION_MINOR 3
 
 /* All three follow the snprintf contract: copy what fits into buf (always
  * NUL-terminated when buf_size > 0) and return the required length without
  * the NUL. */
 UNIR_C_API size_t unir_c_abi_version(char* buf, size_t buf_size);   /* "1.2" */
-/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.17". */
+/* Version of the BUILT library — as unir::version() in the C++ API: "1.2.18". */
 UNIR_C_API size_t unir_version(char* buf, size_t buf_size);
 /* Versions of the engines inside the build: "dmr 1.1.2, ssccr 0.1.0, qrr 0.1.0". */
 UNIR_C_API size_t unir_engine_versions(char* buf, size_t buf_size);
@@ -249,6 +249,13 @@ struct unir_settings {
                                  * number of codes; chosen ones — with
                                  * max_codes ≠ 1 and DataMatrix or QR among
                                  * them; 1 — always, -1 — no network */
+
+    /* ── ABI 1.3 (unir 1.2.18) ── */
+    int      caller_full_core;  /* full core frequency for the calling thread
+                                 * while a frame is read (Linux, uclamp
+                                 * util_min = 1024, the previous value is
+                                 * restored): 0 — default, yes; 1 — yes;
+                                 * -1 — leave the caller's thread alone */
 };
 
 /* Settings tag of ABI 1.x: bytes 'U' 'N' 'R' '1' (little-endian). */

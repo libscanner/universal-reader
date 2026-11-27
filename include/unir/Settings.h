@@ -75,6 +75,16 @@ struct Settings {
     /// read does not depend on the number of threads, except for frames that
     /// hit the time limit (a crop has its own limit, 250 ms).
     int threads = 0;
+    /// Full core frequency for the calling thread during scan()/scanFile()
+    /// (Linux, uclamp util_min = 1024; the previous value is restored on
+    /// return). With the schedutil governor a thread that waits for the
+    /// library's threads cools down, and the next frame runs at a low
+    /// frequency: sheets of 20 barcodes on 4 threads — median 187 -> 157 ms,
+    /// a conveyor frame — 67.7 -> 64.5 ms on average. false — leave the
+    /// caller's thread alone (it has its own scheduling policy). Without
+    /// uclamp in the kernel, or when it is not permitted, nothing happens.
+    /// The library's own pool threads always set the hint.
+    bool callerFullCore = true;
 };
 
 /// Whether the scout network is on with these settings (Settings::netMode).
